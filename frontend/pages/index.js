@@ -3,22 +3,27 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [msg, setMsg] = useState("");
 
+  const backendUrl = "https://ai-today-bqpb.onrender.com";
+
   useEffect(() => {
-    fetch("https://ai-today-bqpb.onrender.com/api/hello")
+    fetch(`${backendUrl}/api/test-supabase`)
       .then((res) => res.json())
-      .then((data) => setMsg(data.message))
-      .catch((err) => {
-        console.error(err);
-        setMsg("Failed to reach backend");
-      });
+      .then((data) => {
+        if (data.data) {
+          setMsg(JSON.stringify(data.data, null, 2));
+        } else if (data.error) {
+          setMsg(`Error: ${data.error}`);
+        } else {
+          setMsg("No data received");
+        }
+      })
+      .catch(() => setMsg("Failed to reach backend"));
   }, []);
 
   return (
     <div style={{ padding: 20 }}>
       <h1>AI Today Frontend</h1>
-      <p>
-        Backend says: <strong>{msg}</strong>
-      </p>
+      <pre>{msg}</pre>
     </div>
   );
 }

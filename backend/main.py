@@ -1,16 +1,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from supabase import create_client, Client
+from dotenv import load_dotenv
+import os
 
 app = FastAPI()
 
-# CORS: Allow frontend (temporarily allow all origins)
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For dev: allow all; later restrict to your frontend URL
+    allow_origins=["*"],  # Later restrict to your frontend domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+load_dotenv()
+
+# Initialize Supabase client
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.get("/")
 def read_root():
@@ -18,4 +28,12 @@ def read_root():
 
 @app.get("/api/hello")
 def say_hello():
-    return {"message": "Hello from your AI Today backend!"}
+    return {"message": "Fadl Ghaddar"}
+
+@app.get("/api/test-supabase")
+def test_supabase():
+    try:
+        response = supabase.table("Articles").select("*").execute()
+        return {"data": response.data}
+    except Exception as e:
+        return {"error": str(e)}
