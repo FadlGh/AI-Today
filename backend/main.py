@@ -28,7 +28,7 @@ def read_root():
 
 @app.get("/api/hello")
 def say_hello():
-    return {"message": "Fadl Ghaddar"}
+    return {"message": "Fadl Ghaddar1"}
 
 @app.get("/api/test-supabase")
 def test_supabase():
