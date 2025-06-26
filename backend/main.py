@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from groq import Groq
 import os
 
 app = FastAPI()
@@ -35,5 +36,27 @@ def test_supabase():
     try:
         response = supabase.table("Articles").select("*").execute()
         return {"data": response.data}
+    except Exception as e:
+        return {"error": str(e)}
+    
+@app.get("/api/test-groq")
+def test_groq():
+    try:
+        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+        chat_completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": "You are a a traditional conservative person."},
+                {
+                    "role": "user",
+                    "content": (
+                        "Tell your opinion about cutting cost of reusable energy "
+                    ),
+                },
+            ],
+        )
+
+        return {"data": chat_completion.choices[0].message.content}
     except Exception as e:
         return {"error": str(e)}
