@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [msg, setMsg] = useState("");
 
-  const backendUrl = "http://127.0.0.1:8000";
+  const backendUrl = "https://ai-today-bqpb.onrender.com";
 
   useEffect(() => {
     fetch(`${backendUrl}/api/test-groq`)
