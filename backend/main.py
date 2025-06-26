@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from groq import Groq
+from article_handler import *
 import os
 
 app = FastAPI()
@@ -60,3 +61,16 @@ def test_groq():
         return {"data": chat_completion.choices[0].message.content}
     except Exception as e:
         return {"error": str(e)}
+
+@app.post("/api/generate-takes")
+async def generate(request: Request):
+    article_handler = ArticleHandler(supabase, os.getenv("GROQ_API_KEY"))
+    body = await request.json()
+    title = body.get("title")
+    summary = body.get("summary")
+
+    if not title or not summary:
+        return {"error": "Missing title or summary"}
+
+    takes = article_handler.handle_article(title, summary)
+    return {"takes": takes}
